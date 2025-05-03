@@ -1,101 +1,77 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#007bff" />
-    <meta name="description" content="Trang chấm công Wifi - nhẹ, nhanh, chuẩn." />
-    <title>Chấm công Wifi</title>
-    <link rel="icon" href="https://ssl.gstatic.com/docs/script/images/favicon.ico">
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        font-family: 'Segoe UI', sans-serif;
-        margin: 0; padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background: #f5f7fa;
-      }
-      .container {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        width: 90%; max-width: 400px;
-        text-align: center;
-      }
-      h2 { color: #333; margin-bottom: 1rem; }
-      input {
-        width: 100%; padding: 0.75rem;
-        margin-top: 0.5rem;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-      }
-      button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 0.75rem;
-        width: 100%;
-        font-size: 1rem;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 1rem;
-      }
-      button:hover { background-color: #0056b3; }
-      #result {
-        margin-top: 1rem;
-        font-weight: bold;
-      }
-    </style>
-    <script>
-      const apiURL = "https://script.google.com/macros/s/AKfycbwk22LHTfqZKjcrKXzgcZBwlpQ2m-ZWH3KziPGouSGdzQMNacZKWndcELuYkOtL-sLM/exec"; // REPLACE THIS
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chấm công Wifi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Chấm công Wifi</h2>
+    <input type="text" id="name" placeholder="Nhập tên..." />
+    <button onclick="log()">Xác nhận</button>
+    <div id="result"></div>
+  </div>
 
-      async function log() {
-        const name = document.getElementById("name").value.trim();
-        const result = document.getElementById("result");
+  <script>
+    const apiURL = "https://script.google.com/macros/s/AKfycbwk22LHTfqZKjcrKXzgcZBwlpQ2m-ZWH3KziPGouSGdzQMNacZKWndcELuYkOtL-sLM/exec"; // DÁN API VÀO ĐÂY
 
-        if (!name) return alert("Vui lòng nhập tên");
+    async function log() {
+      const name = document.getElementById("name").value.trim();
+      const result = document.getElementById("result");
 
-        result.innerText = "Đang chấm công...";
-        result.style.color = "#555";
+      if (!name) return alert("Vui lòng nhập tên");
 
-        try {
-          const resIP = await fetch("https://api.ipify.org?format=json");
-          const ip = (await resIP.json()).ip;
+      result.innerText = "Đang xử lý...";
+      result.style.color = "#333";
 
-          const res = await fetch(apiURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, ip })
-          });
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ip = (await ipRes.json()).ip;
 
-          const msg = await res.text();
-          result.innerText = msg;
-          result.style.color = msg.includes("✅") ? "green" : "red";
-
-        } catch (e) {
-          result.innerText = "❌ Lỗi kết nối. Thử lại sau.";
-          result.style.color = "red";
-        }
-      }
-
-      window.onload = () => {
-        document.getElementById("name").addEventListener("keypress", function (e) {
-          if (e.key === "Enter") log();
+        const res = await fetch(apiURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, ip })
         });
-      };
-    </script>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Chấm công Wifi</h2>
-      <input type="text" id="name" placeholder="Nhập tên của bạn..." autofocus />
-      <button onclick="log()">Xác nhận</button>
-      <div id="result"></div>
-    </div>
-  </body>
+
+        const text = await res.text();
+        result.innerText = text;
+        result.style.color = text.includes("✅") ? "green" : "red";
+      } catch (e) {
+        result.innerText = "❌ Lỗi kết nối. Thử lại sau.";
+        result.style.color = "red";
+        console.error("Error:", e);
+      }
+    }
+  </script>
+</body>
 </html>
